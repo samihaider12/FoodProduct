@@ -3,11 +3,10 @@ import Home from "../../pages/Home";
 import PickUp from "../../pages/PickUp";
 import PandaMart from "../../pages/PandaMart";
 import PandaShop from "../../pages/PandaShop";
-// import ShopList from "../../pages/Details/ShopList";
 import CateringCard from "../../pages/Caterers";
 import AuthPage from "../../Auth/AuthForm";
 // Agar ye pages abhi nahi banaye toh temporary empty div use kar sakte hain
-const Placeholder = ({ name }: { name: string }) => <div style={{padding: '20px'}}><h1>{name} Page Coming Soon</h1></div>;
+// const Placeholder = ({ name }: { name: string }) => <div style={{padding: '20px'}}><h1>{name} Page Coming Soon</h1></div>;
 
 function AppRouter() {
   return (
@@ -23,10 +22,8 @@ function AppRouter() {
         {/* Baki routes ko placeholder de diya hai takay navigation crash na ho */}
         
         
-       
-        
         {/* Cart aur Login ke routes bhi yahan add honge */}
-        <Route path="/cart" element={<Placeholder name="Cart" />} />
+        <Route path="/cart" element={<Home />} />
         <Route path="/login" element={<AuthPage />} />
       </Routes>
     </BrowserRouter>

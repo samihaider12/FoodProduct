@@ -1,3 +1,4 @@
+ 
 // import { Link, useNavigate, useLocation } from "react-router-dom";
 // import React, { useEffect, useState } from "react";
 // import {
@@ -21,16 +22,20 @@
 //   LocalMall,
 //   Storefront,
 //   Restaurant,
-//   PersonOutline // Login icon for mobile
+//   PersonOutline
 // } from "@mui/icons-material"; 
-
-
+// import { useCartStore } from "../store/useCartStor"; // Zustand Store
 
 // const Navbar = () => { 
 //   const navigate = useNavigate();
 //   const location = useLocation();
 //   const [value, setValue] = useState(0);
 
+//   // Zustand store se cart count lein
+//   const cart = useCartStore((state) => state.cart);
+//   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+//   // URL ke mutabiq Tabs ko highlight karne ke liye
 //   useEffect(() => {
 //     const paths = ["/home", "/pickup", "/pandamart", "/shops", "/caterers"];
 //     const index = paths.indexOf(location.pathname);
@@ -43,9 +48,6 @@
 //     navigate(paths[newValue]);
 //   };
 
-
-
-
 //   return (
 //     <AppBar position="sticky" elevation={1} sx={{ backgroundColor: "#ffffff", color: "#000", width: "100%" }}>
 //       <Toolbar sx={{ 
@@ -55,7 +57,7 @@
 //         px: { xs: 1, sm: 2 } 
 //       }}>
         
-//         {/* 1. Logo: Mobile par chota size */}
+//         {/* 1. Logo */}
 //         <Typography 
 //           component={Link} 
 //           to="/home" 
@@ -64,13 +66,13 @@
 //             fontWeight: 700, 
 //             fontSize: { xs: "18px", md: "24px" }, 
 //             color: "#D70F64",
-//             flexShrink: 0 // Logo ko dabne se bachata hai
+//             flexShrink: 0 
 //           }}
 //         >
-//           foodpanda
+//           TastyCart
 //         </Typography>
 
-//         {/* 2. Search Bar: Mobile par hide kar diya taake login button ki jagah banay */}
+//         {/* 2. Search Bar (Location) */}
 //         <Box sx={{ 
 //           display: { xs: "none", md: "flex" }, 
 //           alignItems: "center", 
@@ -85,20 +87,18 @@
 //           <Search sx={{ color: "#777" }} />
 //         </Box>
 
-//         {/* 3. Actions Area: Isse wrap hone se roka gaya hai */}
+//         {/* 3. Actions Area (Cart & Login) */}
 //         <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
 //           <IconButton component={Link} to="/cart">
-//             <Badge badgeContent={2} color="error">
+//             <Badge badgeContent={cartCount} color="error" sx={{ "& .MuiBadge-badge": { backgroundColor: "#D70F64" } }}>
 //               <ShoppingCart />
 //             </Badge>
 //           </IconButton>
 
-//           {/* Login Button: Mobile par Button gayab hokar Icon ban jayega */}
 //           <Button 
 //             component={Link} 
 //             to="/login" 
 //             variant="outlined"
-//             startIcon={<PersonOutline sx={{ display: { xs: "inline-flex", sm: "none" } }} />}
 //             sx={{ 
 //               textTransform: "none", 
 //               fontWeight: 600, 
@@ -106,21 +106,21 @@
 //               borderColor: "#ddd",
 //               ml: { xs: 0.5, sm: 2 },
 //               minWidth: "auto",
-//               px: { xs: 1, sm: 2 },
-//               "& .MuiButton-startIcon": { margin: 0 } // Mobile icon centering
+//               px: { xs: 1, sm: 2 }
 //             }}
 //           >
+//             <PersonOutline sx={{ display: { xs: "block", sm: "none" } }} />
 //             <Box component="span" sx={{ display: { xs: "none", sm: "block" } }}>Log in</Box>
 //           </Button>
 //         </Box>
 //       </Toolbar>
 
-//       {/* 4. Tabs: Image wala carousel style */}
+//       {/* 4. Navigation Tabs (Delivery, Pickup, etc.) */}
 //       <Box sx={{ borderTop: "1px solid #f0f0f0", backgroundColor: "#fff" }}>
 //         <Tabs
 //           value={value}
 //           onChange={handleChange}
-//           variant="scrollable" // Ye sabse important hai slider ke liye
+//           variant="scrollable" 
 //           scrollButtons="auto" 
 //           allowScrollButtonsMobile
 //           sx={{
@@ -129,7 +129,8 @@
 //               textTransform: "none", 
 //               minWidth: { xs: "80px", sm: "120px" }, 
 //               fontWeight: 600, 
-//               color: "#707070" 
+//               color: "#707070",
+//               fontSize: "14px"
 //             },
 //             "& .Mui-selected": { color: "#D70F64 !important" }
 //           }}
@@ -146,6 +147,7 @@
 // };
 
 // export default Navbar;
+
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import {
@@ -154,42 +156,85 @@ import {
   Typography,
   IconButton,
   Box,
+  InputBase,
   Badge,
   Button,
   Tabs,
-  Tab,
+  Tab
 } from "@mui/material";
 import {
   ShoppingCart,
+  LocationOn,
+  Search,
   TwoWheeler,
   DirectionsRun,
   LocalMall,
   Storefront,
   Restaurant,
-  Logout as LogoutIcon,
   PersonOutline,
-} from "@mui/icons-material";
-import { auth } from "../DataBase/fireBase";
-import { useCart } from "../context/CartContext"; // Aapka Global Context
+  LogoutOutlined 
+} from "@mui/icons-material"; 
+import { useCartStore } from "../store/useCartStor";
+import { auth } from "../DataBase/fireBase"; // Aapki firebase file
+import { onAuthStateChanged } from "firebase/auth";
+import { logoutUser } from "../DataBase/auth.service"; // Aapka export kiya hua function
 import Swal from "sweetalert2";
 
-const Navbar = () => {
-  const { totalItems1, clearCart } = useCart(); // Global items count aur cart empty karne ke liye
+const Navbar = () => { 
   const navigate = useNavigate();
   const location = useLocation();
-
   const [value, setValue] = useState(0);
-  const [user, setUser] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Auth state listener
+  // 1. Check if user is logged in or not
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
     });
     return () => unsubscribe();
   }, []);
 
-  // Sync tabs with URL
+  // 2. Handle Logout
+// 2. Handle Logout with Confirmation Warning
+  const handleLogout = async () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#D70F64", // Foodpanda theme color
+      cancelButtonColor: "#6e7881",
+      confirmButtonText: "Yes, logout!",
+      cancelButtonText: "Cancel"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await logoutUser();
+          Swal.fire({
+            title: "Logged Out!",
+            text: "You have been logged out successfully.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          navigate("/home");
+        } catch (error) {
+          Swal.fire("Error", "Logout failed. Please try again.", "error");
+        }
+      } else {
+        // Agar user cancel kar de toh
+        console.log("Logout cancelled by user");
+      }
+    });
+  };
+
+  const cart = useCartStore((state) => state.cart);
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
   useEffect(() => {
     const paths = ["/home", "/pickup", "/pandamart", "/shops", "/caterers"];
     const index = paths.indexOf(location.pathname);
@@ -202,115 +247,69 @@ const Navbar = () => {
     navigate(paths[newValue]);
   };
 
-  // --- LOGOUT WITH WARNING MESSAGE ---
-  const handleLogout = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you really want to logout?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#D70F64",
-      cancelButtonColor: "#6e7881",
-      confirmButtonText: "Yes, Logout!",
-      cancelButtonText: "Cancel",
-      reverseButtons: true
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await auth.signOut();
-          clearCart(); // Logout par cart empty karna better hai
-          Swal.fire({
-            title: "Logged Out!",
-            text: "See you again soon!",
-            icon: "success",
-            timer: 1500,
-            showConfirmButton: false
-          });
-          navigate("/home");
-        } catch (error) {
-          Swal.fire("Error", "Logout failed. Try again.", "error");
-        }
-      }
-    });
-  };
-
   return (
-    <AppBar position="sticky" elevation={1} sx={{ backgroundColor: "#fff", color: "#000", width: "100%" }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between", px: { xs: 1, sm: 2 } }}>
+    <AppBar position="sticky" elevation={1} sx={{ backgroundColor: "#ffffff", color: "#000", width: "100%" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between", gap: { xs: 1, md: 2 }, px: { xs: 1, sm: 2 } }}>
         
         {/* Logo */}
-        <Typography 
-          component={Link} 
-          to="/home" 
-          sx={{ textDecoration: "none", fontWeight: 700, fontSize: { xs: 20, md: 24 }, color: "#D70F64" }}
-        >
+        <Typography component={Link} to="/home" sx={{ textDecoration: "none", fontWeight: 700, fontSize: { xs: "18px", md: "24px" }, color: "#D70F64", flexShrink: 0 }}>
           TastyCart
         </Typography>
 
-        {/* Right Side Actions */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 2 } }}>
-          
-          {/* Cart Icon with Badge */}
+        {/* Search Bar */}
+        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", backgroundColor: "#f5f5f5", borderRadius: "999px", px: 2, py: 0.5, flex: 1, maxWidth: "500px" }}>
+          <LocationOn sx={{ color: "#D70F64", mr: 1 }} />
+          <InputBase placeholder="Enter your location" sx={{ flex: 1, fontSize: "14px" }} />
+          <Search sx={{ color: "#777" }} />
+        </Box>
+
+        {/* Actions (Cart & Auth) */}
+        <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
           <IconButton component={Link} to="/cart">
-            <Badge badgeContent={totalItems1} color="error">
+            <Badge badgeContent={cartCount} color="error" sx={{ "& .MuiBadge-badge": { backgroundColor: "#D70F64" } }}>
               <ShoppingCart />
             </Badge>
           </IconButton>
 
-          {/* Conditional Login/Logout Button */}
-          {user ? (
+          {/* Login/Logout Button Logic */}
+          {isLoggedIn ? (
             <Button 
-              variant="outlined" 
               onClick={handleLogout}
-              startIcon={<LogoutIcon />}
-              sx={{ 
-                textTransform: "none", 
-                borderColor: "#ddd", 
-                color: "#333",
-                fontWeight: 600,
-                "&:hover": { borderColor: "#D70F64", color: "#D70F64" }
-              }}
+              variant="outlined"
+              color="error"
+              sx={{ textTransform: "none", fontWeight: 600, ml: { xs: 0.5, sm: 2 }, minWidth: "auto", px: { xs: 1, sm: 2 } }}
             >
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>Logout</Box>
+              <LogoutOutlined sx={{ mr: { sm: 1 } }} fontSize="small" />
+              <Box component="span" sx={{ display: { xs: "none", sm: "block" } }}>Log out</Box>
             </Button>
           ) : (
             <Button 
-              variant="outlined" 
-              onClick={() => navigate("/login")}
-              startIcon={<PersonOutline />}
-              sx={{ 
-                textTransform: "none", 
-                borderColor: "#D70F64", 
-                color: "#D70F64",
-                fontWeight: 600,
-                "&:hover": { bgcolor: "#D70F64", color: "#fff" }
-              }}
+              component={Link} 
+              to="/login" 
+              variant="outlined"
+              sx={{ textTransform: "none", fontWeight: 600, color: "#333", borderColor: "#ddd", ml: { xs: 0.5, sm: 2 }, minWidth: "auto", px: { xs: 1, sm: 2 } }}
             >
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>Login</Box>
+              <PersonOutline sx={{ mr: { sm: 1 } }} fontSize="small" />
+              <Box component="span" sx={{ display: { xs: "none", sm: "block" } }}>Log in</Box>
             </Button>
           )}
         </Box>
       </Toolbar>
 
-      {/* Tabs Menu */}
+      {/* Tabs */}
       <Box sx={{ borderTop: "1px solid #f0f0f0", backgroundColor: "#fff" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
+        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile
           sx={{
-            "& .MuiTabs-indicator": { backgroundColor: "#D70F64", height: 3 },
-            "& .MuiTab-root": { textTransform: "none", minWidth: { xs: 80, sm: 100 }, fontWeight: 600, color: "#707070" },
-            "& .Mui-selected": { color: "#D70F64 !important" },
+            "& .MuiTabs-indicator": { backgroundColor: "#D70F64", height: "3px" },
+            "& .MuiTab-root": { textTransform: "none", minWidth: { xs: "80px", sm: "120px" }, fontWeight: 600, color: "#707070", fontSize: "14px" },
+            "& .Mui-selected": { color: "#D70F64 !important" }
           }}
         >
-          <Tab icon={<TwoWheeler sx={{ fontSize: 20 }} />} iconPosition="start" label="Delivery" />
-          <Tab icon={<DirectionsRun sx={{ fontSize: 20 }} />} iconPosition="start" label="Pick-up" />
-          <Tab icon={<LocalMall sx={{ fontSize: 20 }} />} iconPosition="start" label="pandamart" />
-          <Tab icon={<Storefront sx={{ fontSize: 20 }} />} iconPosition="start" label="Shops" />
-          <Tab icon={<Restaurant sx={{ fontSize: 20 }} />} iconPosition="start" label="Caterers" />
+          <Tab icon={<TwoWheeler sx={{ fontSize: 18 }} />} iconPosition="start" label="Delivery" />
+          <Tab icon={<DirectionsRun sx={{ fontSize: 18 }} />} iconPosition="start" label="Pick-up" />
+          <Tab icon={<LocalMall sx={{ fontSize: 18 }} />} iconPosition="start" label="pandamart" />
+          <Tab icon={<Storefront sx={{ fontSize: 18 }} />} iconPosition="start" label="Shops" />
+          <Tab icon={<Restaurant sx={{ fontSize: 18 }} />} iconPosition="start" label="Caterers" />
         </Tabs>
       </Box>
     </AppBar>
