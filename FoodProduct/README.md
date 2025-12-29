@@ -1,73 +1,96 @@
-# React + TypeScript + Vite
+# 🍔 TastyCart
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TastyCart is a modern food ordering web application built with **React + TypeScript**.  
+It provides a smooth user experience with a clean UI, real-time cart updates, and Firebase-powered authentication & database.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- 🛒 Add to Cart & Remove from Cart
+- 🔄 Real-time Navbar Cart Updates
+- 🔐 User Authentication (Firebase)
+- 📦 Product & Cart Data Management
+- 🎨 Modern UI with Material UI
+- 🔔 Beautiful Alerts using SweetAlert
+- ⚡ Fast & Optimized State Management with Zustand
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **React**
+- **TypeScript**
+- **Material UI (MUI)**
+- **Zustand (State Management)**
+- **SweetAlert2**
+- **Firebase (Auth & Database)**
+- **Vite**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📦 Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Clone the repository:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+```bash
+git clone https://github.com/mohsinyzonetechnology-dev/TastyCartFood.git
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#Go to project directory:
+cd TastyCartFood
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+# Install dependencies:
+npm install
+
+
+#Run the Project
+#Start the development server:
+npm run dev
+
+#The app will run on:
+http://localhost:5173
+
+
+##🔥 Firebase Setup
+
+Create a project in Firebase Console
+Enable:
+Authentication (Email/Password)
+Realtime Database or Firestore
+Add your Firebase config in the project:
+src/DataBase/fireBase.ts
+
+# Project Structure (Simplified)
+src/
+├── components/
+├── pages/
+├── store/          # Zustand stores
+├── DataBase/       # Firebase  
+├── hooks/
+├── App.tsx
+├── main.tsx
+
+# State Management
+
+TastyCart uses Zustand for:
+Cart State
+Product Data
+Global App State
+This ensures fast updates and clean code structure.
+
+# 🎨 UI & UX
+
+Fully responsive design
+Material UI components
+Smooth animation
+User-friendly alerts with SweetAlert
+
+# 📌 Scripts
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+
+👨‍💻 Author
+
+PrimeStack-Sol
+Frontend Developer (React | TypeScript | Firebase)
