@@ -90,7 +90,7 @@ const PandaMart: React.FC = () => {
           {/* LEFT: Products Section */}
           <Grid size={{ xs: 12, md: 8 }}>
             {/* 🎯 Polished Search Bar */}
-            <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+            <motion.div initial={{   opacity: 0 }} animate={{ opacity: 1 }}>
               <TextField
                 fullWidth
                 value={searchQuery}
@@ -122,13 +122,13 @@ const PandaMart: React.FC = () => {
             {/* 🎯 Professional Grid Layout */}
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               <Grid container spacing={2}> {/* Spacing kam rakhi hai taake cards bade dikhen */}
-                <AnimatePresence>
+                {/* <AnimatePresence> */}
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((p) => (
                       <Grid
                         key={p.id}
-                        size={{ sm: 6, md: 4, lg: 4 }}
-                        sx={{ display: 'flex' }}  
+                        size={{xs:12 ,sm: 6, md: 4, lg: 4 }}
+                         
                       >
                         <motion.div
                           variants={itemVariants}
@@ -136,6 +136,7 @@ const PandaMart: React.FC = () => {
                           style={{ width: "100%" }}
                         >
                           <MartData product={p} onAdd={handleAddToCart} />
+
                         </motion.div>
                       </Grid>
                     ))
@@ -144,7 +145,6 @@ const PandaMart: React.FC = () => {
                       <Typography textAlign="center" py={10}>No products found</Typography>
                     </Grid>
                   )}
-                </AnimatePresence>
               </Grid>
             </motion.div>
           </Grid>

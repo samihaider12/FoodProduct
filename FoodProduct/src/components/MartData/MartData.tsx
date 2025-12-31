@@ -11,7 +11,7 @@ interface Props {
 
 const MartCard: React.FC<Props> = ({ product, onAdd }) => {
   return (
-    <Card sx={{ width: 220, borderRadius: "12px", border: "1px solid #eee", position: "relative", boxShadow: "none" }}>
+    <Card sx={{  borderRadius: "12px", border: "1px solid #eee", position: "relative", boxShadow: "none" }}>
       <IconButton 
         onClick={() => onAdd(product)}
         sx={{ position: "absolute", top: 110, right: 10, bgcolor: "white", boxShadow: 2, "&:hover": { bgcolor: "#f5f5f5" } }}
@@ -21,7 +21,14 @@ const MartCard: React.FC<Props> = ({ product, onAdd }) => {
       </IconButton>
 
       <Box sx={{ bgcolor: "#f8f8f8", borderRadius: "12px", m: 1, p: 1 }}>
-        <CardMedia component="img" image={product.image} sx={{ height: 100, objectFit: "contain" }} />
+        {/* <CardMedia component="img" image={product.image} sx={{ height: 100, objectFit: "contain" }} /> */}
+      <CardMedia
+        component="img"
+        image={product.image}
+        loading="lazy"
+        sx={{ height: 100, objectFit: "contain" }}
+      />
+
       </Box>
 
       <CardContent sx={{ pt: 1 }}>

@@ -8,11 +8,9 @@ type MartStore = {
   init: () => void;
 };
 
-export const useMartStore = create<MartStore>((set, get) => ({
-  products: [],
-  initialized: false,
-  init: () => {
-    if (get().initialized) return;
-    set({ products: martJSON as Product[], initialized: true });
-  },
+export const useMartStore = create<MartStore>(() => ({
+  products: martJSON as Product[],
+  initialized: true,
+  init: () => {},
 }));
+

@@ -87,7 +87,7 @@ const RestaurantsMenu = () => {
                 >
                   <CardContent sx={{ flex: 1 }}>
                     <Typography fontWeight={700}>{item.name}</Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>{item.desc}</Typography>
+                    <Typography variant="body2" color="text.secondary" >{item.desc}</Typography>
                     <Typography fontWeight={700} mt={1}>Rs. {item.price}</Typography>
                   </CardContent>
                   <CardMedia component="img" image={item.img} sx={{ width: 140 }} />

@@ -37,41 +37,7 @@ export interface Product {
   quieantity?: string;
   image?: string; 
 }
-
-// Shop Store
-// export interface Shop {
-//   id: number;
-//   name: string;
-//   deliveryTime: string; ////////////
-//   image: string;
-//   isAd: boolean;
-//   discount: string | null;
-//   isFreeDelivery: boolean;
-//   category: string; 
-//   menu: any[]; 
-// } 
-
-
-
-// // Shop Menu Interface
-// export interface ShopMenuItem {
-//   id: number;
-//   name: string;
-//   price: number;
-//   desc: string;
-//   img: string;
-// }
-
-// export interface ShopMenu {
-//   id: number;
-//   name: string;
-//   deliveryTime: string;
-//   isAd: boolean;
-//   discount: string | null;
-//   isFreeDelivery: boolean;
-//   image: string;
-//   menu: ShopMenuItem[]; // ✅ REQUIRED
-// }
+ 
 export interface ShopMenuItem {
   id: number;
   name: string;
